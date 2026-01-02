@@ -28,7 +28,10 @@
         --gold-dim: #8a7020;
       }
       body { 
-        background-color: var(--bg); 
+        /* Golden Gradient Background */
+        background-color: var(--bg);
+        background-image: radial-gradient(circle at 50% 0%, #1c1800 0%, #0a0a0a 60%);
+        background-attachment: fixed;
         color: var(--text); 
         margin: 0;
         font-family: 'Inter', sans-serif;
@@ -53,7 +56,7 @@
       }
 
       /* Skeleton Loader Styles */
-      .sk-container { display: flex; min-height: 100vh; background: var(--bg); }
+      .sk-container { display: flex; min-height: 100vh; background: transparent; }
       .sk-sidebar { display: none; width: 320px; border-right: 1px solid var(--border); padding: 2rem; box-sizing: border-box; }
       .sk-main { flex: 1; padding: 1.5rem; width: 100%; max-width: 900px; margin: 0 auto; box-sizing: border-box; }
       .sk-block { background-color: var(--card); border-radius: 4px; margin-bottom: 1rem; }
@@ -1118,7 +1121,7 @@
           }, [activeModule]);
 
           return (
-            <div className="min-h-screen bg-codex-black text-codex-text selection:bg-codex-gold/30">
+            <div className="min-h-screen text-codex-text selection:bg-codex-gold/30">
               <ReadingProgress />
               
               {/* Sidebar Navigation */}
