@@ -10,11 +10,11 @@
     <meta name="theme-color" content="#0a0a0a" />
     
     <!-- Performance Optimization: Resource Hints -->
-    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://unpkg.com">
-    <link rel="preconnect" href="https://esm.sh">
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://esm.sh" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
     <link rel="dns-prefetch" href="https://unpkg.com">
     <link rel="dns-prefetch" href="https://esm.sh">
@@ -69,7 +69,18 @@
       }
     </script>
     <style>
-      body { background-color: #0a0a0a; color: #E5E5E5; }
+      /* CRITICAL CSS: These styles load immediately, ensuring the page isn't white while waiting for Tailwind */
+      :root {
+        --bg-color: #0a0a0a;
+        --card-color: #121212;
+        --border-color: #2a2a2a;
+        --text-color: #E5E5E5;
+      }
+      body { 
+        background-color: var(--bg-color); 
+        color: var(--text-color); 
+        margin: 0;
+      }
       ::-webkit-scrollbar { width: 8px; }
       ::-webkit-scrollbar-track { background: #0a0a0a; }
       ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
@@ -77,9 +88,27 @@
       p { margin-bottom: 1.5em; line-height: 1.8; white-space: pre-line; }
       .text-justify { text-align: justify; }
       
-      /* Skeleton Loading Styles */
-      .skeleton-loader { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+      /* Mobile Performance: Content Visibility 
+         This skips rendering work for off-screen content, saving massive CPU on mobile 
+      */
+      .chapter-section {
+        content-visibility: auto;
+        contain-intrinsic-size: 500px; /* Estimated height of a section */
+      }
+
+      /* Raw CSS Skeleton Loader (No Tailwind Dependency) */
+      .sk-container { display: flex; min-height: 100vh; background: var(--bg-color); }
+      .sk-sidebar { display: none; width: 320px; border-right: 1px solid var(--border-color); padding: 2rem; }
+      .sk-main { flex: 1; padding: 1.5rem; width: 100%; max-width: 900px; margin: 0 auto; }
+      .sk-block { background-color: var(--card-color); border-radius: 4px; margin-bottom: 1rem; }
+      .sk-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+      
+      @media (min-width: 1024px) {
+        .sk-sidebar { display: flex; flex-direction: column; position: fixed; height: 100vh; top: 0; left: 0; }
+        .sk-main { padding: 6rem; padding-left: 340px; }
+      }
+
+      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
     </style>
 
     <!-- Import Map -->
@@ -97,34 +126,28 @@
 <body>
     <!-- 
       PERFORMANCE OPTIMIZATION: 
-      Static skeleton markup provided within #root to improve First Contentful Paint (FCP) 
-      while React/Babel compiles in the browser.
+      Critical CSS Skeleton. This markup uses raw inline styles and classes defined in <style>
+      so it renders INSTANTLY (0ms), avoiding the "White Screen of Death" while waiting for
+      Tailwind and Babel to load on mobile networks.
     -->
     <div id="root">
-      <div class="min-h-screen bg-[#0a0a0a] text-[#E5E5E5] flex">
-        <!-- Static Sidebar Skeleton -->
-        <nav class="hidden lg:flex flex-col w-80 h-screen fixed left-0 top-0 border-r border-[#2a2a2a] z-20 p-8">
-           <div class="h-10 w-32 bg-[#2a2a2a] rounded mb-8 skeleton-loader"></div>
-           <div class="space-y-4">
-             <div class="h-8 w-full bg-[#121212] rounded skeleton-loader"></div>
-             <div class="h-8 w-full bg-[#121212] rounded skeleton-loader"></div>
-             <div class="h-8 w-full bg-[#121212] rounded skeleton-loader"></div>
-             <div class="h-8 w-full bg-[#121212] rounded skeleton-loader"></div>
-           </div>
+      <div class="sk-container">
+        <!-- Sidebar Skeleton -->
+        <nav class="sk-sidebar">
+           <div class="sk-block sk-pulse" style="height: 40px; width: 120px; margin-bottom: 2rem;"></div>
+           <div class="sk-block sk-pulse" style="height: 30px; width: 100%;"></div>
+           <div class="sk-block sk-pulse" style="height: 30px; width: 100%;"></div>
+           <div class="sk-block sk-pulse" style="height: 30px; width: 100%;"></div>
         </nav>
-        <!-- Static Content Skeleton -->
-        <main class="lg:pl-80 w-full p-6 md:p-24">
-           <div class="max-w-4xl mx-auto">
-             <div class="h-4 w-32 bg-[#2a2a2a] rounded mb-12 skeleton-loader"></div>
-             <div class="h-16 w-3/4 bg-[#2a2a2a] rounded mb-6 skeleton-loader"></div>
-             <div class="h-8 w-1/2 bg-[#2a2a2a] rounded mb-12 skeleton-loader"></div>
-             <div class="space-y-4">
-               <div class="h-4 w-full bg-[#121212] rounded skeleton-loader"></div>
-               <div class="h-4 w-full bg-[#121212] rounded skeleton-loader"></div>
-               <div class="h-4 w-full bg-[#121212] rounded skeleton-loader"></div>
-               <div class="h-4 w-5/6 bg-[#121212] rounded skeleton-loader"></div>
-             </div>
-           </div>
+        <!-- Main Content Skeleton -->
+        <main class="sk-main">
+           <div class="sk-block sk-pulse" style="height: 16px; width: 100px; margin-bottom: 3rem;"></div>
+           <div class="sk-block sk-pulse" style="height: 60px; width: 80%; margin-bottom: 1.5rem;"></div>
+           <div class="sk-block sk-pulse" style="height: 30px; width: 60%; margin-bottom: 3rem;"></div>
+           <div class="sk-block sk-pulse" style="height: 16px; width: 100%;"></div>
+           <div class="sk-block sk-pulse" style="height: 16px; width: 100%;"></div>
+           <div class="sk-block sk-pulse" style="height: 16px; width: 100%;"></div>
+           <div class="sk-block sk-pulse" style="height: 16px; width: 90%;"></div>
         </main>
       </div>
     </div>
@@ -140,6 +163,7 @@
     readTime: "25 min read",
     content: {
       openingContext: "The trajectory of the Indian economy is widely regarded as one of the most compelling growth stories of the 21st century. India is projected to be a $5 trillion economy by the latter half of this decade, driven by favorable demographics, digital public infrastructure, and a manufacturing renaissance. However, a profound and persistent disconnect exists between the nation's macroeconomic success and the financial outcomes of the average Indian household. While the Sensex has compounded at approximately 14-15% annually over the last 30 years, the median retail investor often realizes returns that barely match inflation. This discrepancy is not accidental; it is structural. This module examines the unique structural, cultural, and behavioral challenges that impede the Indian investor from becoming a prudent allocator of capital.",
+      visualType: 'dilemma',
       chapters: [
         {
           heading: "I. The Paradox of Thrift: High Savings, Negative Real Yields",
@@ -236,40 +260,75 @@
     title: 'Structural Asset Classes',
     subtitle: 'The Building Blocks of a Portfolio',
     icon: 'BookOpen',
-    readTime: "20 min read",
+    readTime: "35 min read",
     content: {
-      openingContext: "For the Indian investor, shifting focus from 'Stock Selection' (picking the next multi-bagger) to 'Asset Allocation' (deciding how much to put in Equity vs. Debt) is the most significant step toward financial maturity. An asset class is a collection of securities that exhibit similar financial characteristics and behave similarly in the marketplace. The famous 'Brinson Study' attributed over 90% of portfolio variability to asset allocation, rendering stock-picking a secondary concern.",
-      visualType: 'assetClass',
+      openingContext: "For the institutional investor, the question 'Which stock should I buy?' is secondary. The primary question is 'How should I allocate capital across different asset classes?' This decision—Asset Allocation—explains over 90% of the variance in portfolio returns over time, according to the seminal Brinson, Hood, and Beebower study. \n\nAn asset class is a collection of securities that exhibit similar financial characteristics and behave similarly in the marketplace. The true power of a portfolio comes not from the performance of any single asset, but from the interaction between assets that move independently (Correlation). The goal of The Calm Capital is to construct a system where the whole is more robust than the sum of its parts. This module deconstructs the six fundamental asset classes available to the Indian investor, stripping away marketing narratives to reveal their structural roles, inherent risks, and long-term utility.",
+      visualType: 'assetClassExpandable',
       chapters: [
          { 
-             heading: "I. Public Equity (The Growth Engine)", 
-             body: `Equity represents fractional ownership in a business. Historically, equity has been the only asset class to consistently outpace inflation by a significant margin (generating 4-6% real returns) over periods longer than 10-15 years. In the Indian context, the Nifty 50 and Nifty Next 50 indices provide a diversified proxy for the formal economy.
-
-             **The Volatility Premium:** Equity is volatile. Prices fluctuate daily based on sentiment, liquidity, and earnings. This volatility is not a bug; it is the "risk premium" you capture for providing capital to businesses. If equities were stable, they would yield returns similar to bonds. The investor is paid for enduring the emotional pain of drawdowns.
-
-             For long horizons (>7 years), the probability of negative returns in a broad market index diminishes significantly, approaching zero historically.` 
+             heading: "I. Public Equity: The Engine of Wealth", 
+             body: `**Definition:** Public Equity represents fractional ownership in a business listed on a stock exchange (NSE/BSE). It is a claim on the future earnings and assets of a corporation.
+             
+             **Structural Role:** In a portfolio, Equity serves a single, critical purpose: **Real Growth**. It is the only major asset class that has historically produced returns significantly above inflation (5-6% Real Return) over multi-decade periods. Without Equity, a portfolio cannot maintain its purchasing power against the ravages of lifestyle inflation.
+             
+             **The Volatility Premium:** The high returns of equity are not a 'gift' from the market; they are compensation for enduring volatility. The stock market is not a linear compounding machine; it is a manic-depressive mechanism. In the short run (1-3 years), prices are driven by liquidity, sentiment, and geopolitical noise. In the long run (10+ years), prices converge with earnings growth. The investor who cannot endure a 30% drawdown will never capture the 15% compounding.
+             
+             **Indian Context:** For Indian investors, the Nifty 50 and Nifty Next 50 indices provide a diversified, low-cost mechanism to participate in the growth of the formal economy. Active fund management is increasingly failing to beat these simple benchmarks due to high expense ratios and the efficiency of modern markets.` 
          },
          { 
-             heading: "II. Fixed Income (The Stabilizer)", 
-             body: `Fixed Income is lending. You lend money to the Government (G-Secs) or Corporates (Bonds) in exchange for regular interest. Its primary role is **Stability** and **Income**, not wealth generation.
-
-             For Indian households, the danger is over-allocation here (EPF, PPF, FDs). While safe from volatility, fixed income is vulnerable to inflation and interest rate risk. However, it acts as a shock absorber in the portfolio, allowing you to rebalance when equities crash. A portfolio without debt is psychologically difficult to hold during a 40% market correction.` 
+             heading: "II. Fixed Income (Debt): The Stabilizing Anchor", 
+             body: `**Definition:** Fixed Income involves lending money to an entity (Government or Corporation) for a defined period in exchange for regular interest payments and the return of principal.
+             
+             **Structural Role:** The purpose of Debt in a portfolio is **not** to make you rich. Its purpose is to keep you in the game. It acts as a shock absorber. When equities crash by 40%, high-quality debt (Government Bonds, AAA Corporate Bonds) remains stable. This stability prevents panic selling and provides the 'Dry Powder' necessary to rebalance—selling stable debt to buy undervalued equity.
+             
+             **The Credit Risk Trap:** A common error among Indian investors is 'chasing yield'—buying low-quality corporate bonds or risky debt funds to squeeze out an extra 1-2% return. This defeats the purpose of the asset class. If your 'safe' money has equity-like risks (default risk), the portfolio structure collapses during a crisis. Safety, not return, is the mandate here.
+             
+             **Vehicles:** Public Provident Fund (PPF), Employees' Provident Fund (EPF), and Sovereign Guarantee instruments (G-Secs/T-Bills) form the bedrock of the debt allocation.` 
          },
          { 
-             heading: "III. Gold (The Insurance)", 
-             body: `Gold is widely misunderstood. It is not an investment in the productive sense; it is a currency hedge. It performs well when confidence in fiat currency declines or during geopolitical crises. It has zero internal yield (it produces no cash flow).
-
-             In a portfolio, Gold should be viewed as insurance. A 5-10% allocation can reduce portfolio volatility, but high allocations act as a drag on long-term compounding. The Sovereign Gold Bond (SGB) is the most efficient vehicle for Indian investors, eliminating storage costs and offering tax-free redemption.` 
+             heading: "III. Gold: The Crisis Insurance", 
+             body: `**Definition:** Gold is a commodity that serves as a store of value and a monetary metal. Unlike Equity or Debt, it is an unproductive asset; it generates no cash flow, no dividends, and no interest (in physical form).
+             
+             **Structural Role:** Gold is **Insurance**, not an investment. It is a hedge against two specific risks: Currency Debasement (the loss of faith in fiat money) and Extreme Geopolitical Stress. Gold tends to be uncorrelated or negatively correlated to equities during periods of high fear. When the world is breaking, gold shines.
+             
+             **Allocation Logic:** Because Gold produces nothing, its long-term real return is close to zero (it merely matches inflation). Therefore, institutional allocation is typically capped at 5-10%. This is enough to stabilize the portfolio during a crisis without dragging down long-term returns.
+             
+             **Vehicle:** The Sovereign Gold Bond (SGB) issued by the RBI is structurally superior to physical gold. It eliminates storage costs, purity risks, and offers an additional 2.5% annual interest, transforming a non-yielding asset into a yielding one.` 
          },
          {
-             heading: "IV. Liquid Cash (The Oxygen)",
-             body: `Cash offers 'Optionality'—the ability to handle emergencies without disturbing long-term investments. It is the oxygen of the portfolio. Without liquidity, you may be forced to sell productive assets (Equities) at distressed prices during a market crash to fund immediate needs. This turns temporary paper losses into permanent realized losses.`
+             heading: "IV. Real Estate: The Illiquidity Trap",
+             body: `**Definition:** Physical land or built structures used for residential or commercial purposes.
+             
+             **Structural Reality:** Real Estate is the most over-owned and misunderstood asset class in India. Historically (2002-2012), it generated massive returns due to a one-time adjustment in valuations driven by credit expansion. Structurally, however, it suffers from severe limitations:
+             1. **Indivisibility:** You cannot sell a bedroom to fund a medical emergency.
+             2. **Illiquidity:** Transactions take months.
+             3. **Transaction Costs:** Stamp duty and registration erode 5-7% of value immediately.
+             
+             **The Yield Problem:** Residential rental yields in Indian metros are historically low (1.5% - 2.5%), far below the cost of capital (mortgage rates of 8.5%). This implies that Real Estate is a speculative bet on capital appreciation, not a productive investment based on cash flows. For the average individual, a primary residence is consumption, not investment.`
+         },
+         {
+             heading: "V. Liquid Cash: The Option on Chaos",
+             body: `**Definition:** Money held in Savings Accounts, Liquid Mutual Funds, or Overnight Funds.
+             
+             **Structural Role:** Cash is often viewed as a drag on returns, which it is. However, structurally, Cash represents **Optionality**. It is the only asset that allows you to take advantage of opportunities instantly. More importantly, it buys **psychological durability**. Holding 12-24 months of living expenses in liquid cash ensures that you are never a 'Forced Seller' of your long-term equity portfolio during a personal or market crisis.
+             
+             **Inflation Risk:** The cost of holding cash is the erosion of purchasing power. Therefore, the allocation to cash should be determined by 'Sleep Equity' (how much do you need to feel safe?) rather than return optimization.`
+         },
+         {
+             heading: "VI. International Equity: The Geopolitical Hedge",
+             body: `**Definition:** Ownership in companies listed outside India, primarily in developed markets (US/Europe).
+             
+             **Structural Role:** The Indian economy, while growing, represents only ~3-4% of global market capitalization. By investing only in India, you are betting your entire financial future on the political and economic stability of a single nation. This is 'Home Country Bias'.
+             
+             **Diversification Benefits:**
+             1. **Currency Hedge:** If the Indian Rupee depreciates against the US Dollar (a historical trend of ~3-4% annually), international investments gain value in Rupee terms, acting as a hedge for future dollar-denominated expenses (e.g., foreign education, travel).
+             2. **Sectoral Access:** India does not host global giants in technology, pharmaceuticals, or defense (e.g., Apple, Microsoft, NVIDIA). International allocation provides access to these innovation engines.`
          }
       ],
-      behavioralDimension: "Home Bias leads to over-allocation in domestic assets. Investors overweight assets they can see (Real Estate) or assets from their home country, missing out on global diversification opportunities.",
-      limitations: ["Diversification ensures you never hold the top performer in any given year.", "Correlation breakdown in crises—sometimes all asset classes fall together."],
-      riskStatement: "There is no sanctuary. Every asset has risk. Equity has Market Risk. Debt has Credit Risk. Cash has Inflation Risk.",
-      source: "Modern Portfolio Theory (MPT) & AMFI Guidelines."
+      behavioralDimension: "The 'Endowment Effect' causes investors to overvalue assets they already own (like an inherited house) and resist selling them to diversify, even when the mathematical case is overwhelming.",
+      limitations: ["Past correlation data may not hold in future crises (Correlation Breakdown).", "Taxation on different asset classes varies significantly and changes frequently."],
+      riskStatement: "A perfectly diversified portfolio will always have one component that is underperforming. If you love everything in your portfolio, you are not diversified.",
+      source: "Modern Portfolio Theory (MPT), RBI Reports, and Historical Nifty/Gold Data."
     }
   },
   {
@@ -534,7 +593,8 @@
         import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion';
         import { 
           BookOpen, ShieldAlert, Scale, Landmark, ChevronRight, Menu, X, 
-          Search, Book, User, Feather, FileText, Lock, Layers, Compass, Gavel, Clock, ArrowUp, Zap, BarChart, Activity, Droplets, Target, Divide
+          Search, Book, User, Feather, FileText, Lock, Layers, Compass, Gavel, Clock, ArrowUp, Zap, BarChart, Activity, Droplets, Target, Divide,
+          Globe, Home, TrendingUp, Coins
         } from 'lucide-react';
 
         // Retrieve content from global window object
@@ -554,6 +614,88 @@
         };
 
         // --- VISUALIZATION COMPONENTS ---
+
+        const GrowthVsRealityDiagram = () => {
+          return (
+            <div className="w-full p-8 bg-codex-card border border-codex-border/50 rounded-sm mb-12 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-10 transition-opacity group-hover:opacity-20">
+                    <Activity size={120} className="text-codex-gold" />
+                </div>
+                <h4 className="font-serif text-2xl text-codex-text mb-2">The Wealth Gap</h4>
+                <p className="font-sans text-[10px] uppercase tracking-widest text-codex-dim mb-8">Structural Underperformance of Retail Capital</p>
+                
+                <div className="relative h-64 w-full flex items-end justify-between px-0 md:px-4 border-l border-b border-codex-border">
+                    {/* Grid Lines */}
+                    <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-10">
+                        <div className="w-full h-px bg-white border-t border-dashed"></div>
+                        <div className="w-full h-px bg-white border-t border-dashed"></div>
+                        <div className="w-full h-px bg-white border-t border-dashed"></div>
+                        <div className="w-full h-px bg-white border-t border-dashed"></div>
+                    </div>
+
+                    <svg className="absolute inset-0 h-full w-full pointer-events-none overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
+                         {/* Market Line (Sensex) */}
+                        <motion.path
+                            d="M 0 100 C 30 80, 60 40, 100 10" 
+                            fill="none"
+                            stroke="#D4AF37" 
+                            strokeWidth="0.8"
+                            vectorEffect="non-scaling-stroke"
+                            initial={{ pathLength: 0 }}
+                            whileInView={{ pathLength: 1 }}
+                            transition={{ duration: 2, ease: "easeOut" }}
+                        />
+                         {/* Investor Line */}
+                        <motion.path
+                            d="M 0 100 C 30 90, 60 80, 100 60" 
+                            fill="none"
+                            stroke="#52525b"
+                            strokeWidth="0.8"
+                            strokeDasharray="2 2"
+                            vectorEffect="non-scaling-stroke"
+                            initial={{ pathLength: 0 }}
+                            whileInView={{ pathLength: 1 }}
+                            transition={{ duration: 2, delay: 0.5, ease: "easeOut" }}
+                        />
+                    </svg>
+
+                    {/* Labels */}
+                    <motion.div 
+                        initial={{ opacity: 0, x: 10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 2 }}
+                        className="absolute top-[10%] right-0 bg-codex-black/90 p-2 border-l-2 border-codex-gold backdrop-blur-sm"
+                    >
+                        <span className="text-xs font-bold text-codex-gold block">Market Potential (14%)</span>
+                        <span className="text-[10px] text-codex-dim">Wealth Creation</span>
+                    </motion.div>
+
+                    <motion.div 
+                        initial={{ opacity: 0, x: 10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 2.5 }}
+                        className="absolute bottom-[40%] right-0 bg-codex-black/90 p-2 border-l-2 border-codex-dim backdrop-blur-sm"
+                    >
+                        <span className="text-xs font-bold text-codex-dim block">Investor Reality (5%)</span>
+                        <span className="text-[10px] text-codex-dim opacity-70">Wealth Preservation</span>
+                    </motion.div>
+                </div>
+                
+                <div className="mt-6 flex justify-between text-[10px] font-mono text-codex-dim uppercase tracking-wider opacity-60">
+                    <span>1993</span>
+                    <span>2003</span>
+                    <span>2013</span>
+                    <span>2023</span>
+                </div>
+                
+                <div className="mt-8 p-4 bg-codex-black/40 border-l border-codex-gold/30 rounded-r-sm">
+                    <p className="text-xs md:text-sm text-codex-text italic font-body opacity-80 leading-relaxed">
+                        "The gap between the gold line and the grey line represents the cost of <span className="text-codex-gold">behavioral errors</span> and <span className="text-codex-gold">poor asset allocation</span>."
+                    </p>
+                </div>
+            </div>
+          )
+        }
 
         const InflationDiagram = () => {
           const years = [0, 5, 10, 15, 20];
@@ -720,6 +862,7 @@
                             className={`w-full text-left p-8 border border-codex-border rounded-sm cursor-pointer transition-all duration-300 relative overflow-hidden group ${selectedId === risk.id ? 'bg-codex-card border-codex-gold ring-1 ring-codex-gold/20' : 'hover:bg-codex-card/50'}`}
                             aria-expanded={selectedId === risk.id}
                             aria-label={`Expand details for ${risk.title}`}
+                            style={{ willChange: 'transform, height' }}
                         >
                             <div className="flex justify-between items-start mb-4">
                                 <div className="flex items-center gap-4">
@@ -759,10 +902,141 @@
             )
         };
 
+        const InteractiveAssetGrid = () => {
+            const [selectedId, setSelectedId] = useState(null);
+            
+            const assets = [
+                {
+                    id: 'equity',
+                    title: 'Public Equity',
+                    subtitle: 'The Growth Engine',
+                    icon: <TrendingUp size={24} className="text-codex-gold" />,
+                    role: 'Wealth Creation > Inflation',
+                    risk: 'Volatility (Drawdowns)',
+                    horizon: '10+ Years',
+                    details: 'Equity is fractional ownership. It is the only asset class that consistently beats inflation by a wide margin (5-6% real return) over long periods. However, it requires the stomach to endure 30-50% temporary drops.'
+                },
+                {
+                    id: 'debt',
+                    title: 'Fixed Income',
+                    subtitle: 'The Anchor',
+                    icon: <Scale size={24} className="text-codex-dim" />,
+                    role: 'Stability & Rebalancing',
+                    risk: 'Interest Rate & Credit',
+                    horizon: '3-7 Years',
+                    details: 'Debt provides stability. It acts as a counterweight to equity volatility. The goal here is not to get rich, but to survive market crashes without selling stocks. Focus on high quality (Govt/AAA) over high yield.'
+                },
+                {
+                    id: 'gold',
+                    title: 'Gold',
+                    subtitle: 'The Crisis Hedge',
+                    icon: <Coins size={24} className="text-yellow-600" />,
+                    role: 'Currency Insurance',
+                    risk: 'Zero Real Yield',
+                    horizon: 'Generational',
+                    details: 'Gold is not an investment; it is money. It protects purchasing power against currency debasement and extreme geopolitical stress. It generates no cash flow, so allocation should be limited to 5-10%.'
+                },
+                {
+                    id: 'realestate',
+                    title: 'Real Estate',
+                    subtitle: 'The Illiquidity Trap',
+                    icon: <Home size={24} className="text-stone-400" />,
+                    role: 'Leveraged Appreciation',
+                    risk: 'Liquidity & Concentration',
+                    horizon: '15+ Years',
+                    details: 'While historically popular, Real Estate suffers from indivisibility (you cannot sell a bedroom) and poor rental yields (2-3%) in India. It is efficient only for consumption (primary home), not investment.'
+                },
+                {
+                    id: 'cash',
+                    title: 'Liquid Cash',
+                    subtitle: 'The Oxygen',
+                    icon: <Droplets size={24} className="text-blue-400" />,
+                    role: 'Optionality',
+                    risk: 'Inflation Erosion',
+                    horizon: '0-1 Years',
+                    details: 'Cash buys time and freedom. Holding 12 months of expenses ensures you are never a forced seller during a crisis. The cost of this option is the loss of purchasing power to inflation.'
+                },
+                {
+                    id: 'global',
+                    title: 'Global Equity',
+                    subtitle: 'The Geopolitical Hedge',
+                    icon: <Globe size={24} className="text-cyan-500" />,
+                    role: 'Diversification',
+                    risk: 'Currency & Regulation',
+                    horizon: '10+ Years',
+                    details: 'Investing only in India is a "Home Bias" risk. Global equity provides access to sectors not available domestically (Big Tech) and hedges against Rupee depreciation.'
+                }
+            ];
+
+            return (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+                     {assets.map(asset => (
+                        <motion.button 
+                            key={asset.id}
+                            layout
+                            onClick={() => setSelectedId(selectedId === asset.id ? null : asset.id)}
+                            className={`w-full text-left p-6 border border-codex-border rounded-sm cursor-pointer transition-all duration-300 relative overflow-hidden group flex flex-col ${selectedId === asset.id ? 'bg-codex-card border-codex-gold ring-1 ring-codex-gold/20' : 'hover:bg-codex-card/50'}`}
+                            aria-expanded={selectedId === asset.id}
+                            style={{ willChange: 'transform, height' }}
+                        >
+                            <div className="flex w-full justify-between items-start">
+                                <div className="flex items-center gap-4">
+                                    <div className={`p-3 rounded-full bg-codex-black border border-codex-border group-hover:border-codex-gold transition-colors`}>
+                                        {asset.icon}
+                                    </div>
+                                    <div>
+                                        <h5 className="font-serif text-lg text-codex-text">{asset.title}</h5>
+                                        <p className="text-[10px] uppercase tracking-widest text-codex-dim mt-1">{asset.subtitle}</p>
+                                    </div>
+                                </div>
+                                <ChevronRight className={`text-codex-dim transition-transform duration-300 ${selectedId === asset.id ? 'rotate-90 text-codex-gold' : ''}`} />
+                            </div>
+
+                            <AnimatePresence>
+                                {selectedId === asset.id && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="mt-6 pt-4 border-t border-codex-border/50 w-full"
+                                    >
+                                        <div className="grid grid-cols-3 gap-4 mb-4">
+                                            <div>
+                                                <span className="text-[9px] uppercase tracking-wider text-codex-dim block mb-1">Role</span>
+                                                <span className="text-xs font-bold text-codex-gold">{asset.role}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-[9px] uppercase tracking-wider text-codex-dim block mb-1">Risk</span>
+                                                <span className="text-xs font-bold text-codex-text">{asset.risk}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-[9px] uppercase tracking-wider text-codex-dim block mb-1">Horizon</span>
+                                                <span className="text-xs font-bold text-codex-text">{asset.horizon}</span>
+                                            </div>
+                                        </div>
+                                        <p className="text-sm font-body text-codex-dim leading-relaxed">
+                                            {asset.details}
+                                        </p>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </motion.button>
+                     ))}
+                     <div className="col-span-1 lg:col-span-2 text-center mt-6">
+                         <span className="text-[10px] uppercase tracking-widest text-codex-dim opacity-50 flex items-center justify-center gap-2 animate-pulse">
+                            <Zap size={12}/> Interactive: Explore asset characteristics
+                         </span>
+                    </div>
+                </div>
+            );
+        };
+
         const VisualComponent = ({ type }) => {
             switch(type) {
+                case 'dilemma': return <GrowthVsRealityDiagram />;
                 case 'inflation': return <InflationDiagram />;
-                case 'assetClass': return <AssetClassTable />;
+                case 'assetClass': return <AssetClassTable />; // Keeping for backward compatibility if needed, though replaced in data
+                case 'assetClassExpandable': return <InteractiveAssetGrid />;
                 case 'compounding': return <CompoundingDiagram />;
                 case 'risk': return <InteractiveRiskMatrix />;
                 default: return null;
@@ -923,7 +1197,7 @@
 
                     <div className="my-16 space-y-20">
                        {activeModule.content.chapters.map((chapter, idx) => (
-                         <section key={idx} className="relative">
+                         <section key={idx} className="relative chapter-section">
                             <h3 className="font-sans text-lg font-bold uppercase tracking-widest text-codex-text mb-8 flex items-center gap-4">
                               <span className="w-8 h-8 rounded-full border border-codex-dim flex items-center justify-center text-xs text-codex-dim">{idx + 1}</span>
                               {chapter.heading}
