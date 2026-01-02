@@ -17,14 +17,15 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Critical CSS: Loads instantly. Independent of Tailwind. -->
+    <!-- Critical CSS: Loads instantly. Defines Gold (#D4AF37) immediately. -->
     <style>
       :root {
         --bg: #0a0a0a;
         --card: #121212;
         --border: #2a2a2a;
         --text: #E5E5E5;
-        --gold: #D4AF37;
+        --gold: #D4AF37;  /* The "Yellow" Color restored */
+        --gold-dim: #8a7020;
       }
       body { 
         background-color: var(--bg); 
@@ -34,6 +35,17 @@
         overflow-x: hidden;
       }
       
+      /* Instant Branding Classes (Raw CSS) */
+      .text-gold { color: var(--gold) !important; }
+      .border-gold { border-color: var(--gold) !important; }
+      .bg-gold { background-color: var(--gold) !important; }
+      
+      /* Custom Scrollbar in Gold */
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: var(--bg); }
+      ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+      ::selection { background: rgba(212, 175, 55, 0.3); color: var(--gold); }
+
       /* Mobile Optimization: Skip rendering off-screen content */
       .chapter-section, .asset-grid-container {
         content-visibility: auto;
@@ -47,6 +59,9 @@
       .sk-block { background-color: var(--card); border-radius: 4px; margin-bottom: 1rem; }
       .sk-pulse { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
       
+      /* Gold Accent on Skeleton Sidebar */
+      .sk-sidebar { border-top: 4px solid var(--gold); } 
+
       @media (min-width: 1024px) {
         .sk-sidebar { display: flex; flex-direction: column; position: fixed; height: 100vh; top: 0; left: 0; }
         .sk-main { padding: 6rem; padding-left: 340px; }
@@ -70,12 +85,18 @@
 <body>
     <!-- 
       INITIAL SKELETON:
-      This is strictly HTML/CSS. It paints immediately (FCP) while the heavy JS loads in background.
+      This is strictly HTML/CSS. It paints immediately (FCP).
+      We add the 'text-gold' class here to ensure branding is visible instantly.
     -->
     <div id="root">
       <div class="sk-container">
         <nav class="sk-sidebar">
-           <div class="sk-block" style="height: 40px; width: 140px; margin-bottom: 3rem; background: transparent; border: 1px solid var(--border);"></div>
+           <!-- Logo Skeleton -->
+           <div class="sk-block" style="height: 40px; width: 140px; margin-bottom: 0.5rem; background: transparent; border: none;">
+             <div style="height: 4px; width: 40px; background: var(--gold); margin-bottom: 10px;"></div>
+           </div>
+           <div class="sk-block" style="height: 20px; width: 120px; margin-bottom: 3rem; opacity: 0.5;"></div>
+
            <div class="sk-block sk-pulse" style="height: 40px; width: 100%;"></div>
            <div class="sk-block sk-pulse" style="height: 40px; width: 100%;"></div>
            <div class="sk-block sk-pulse" style="height: 40px; width: 100%;"></div>
@@ -88,7 +109,7 @@
            <div class="sk-block sk-pulse" style="height: 60px; width: 90%; margin-bottom: 1rem;"></div>
            <div class="sk-block sk-pulse" style="height: 30px; width: 60%; margin-bottom: 4rem;"></div>
            <!-- Diagram Area -->
-           <div class="sk-block sk-pulse" style="height: 300px; width: 100%; margin-bottom: 4rem; border: 1px solid var(--border); background: transparent;"></div>
+           <div class="sk-block sk-pulse" style="height: 300px; width: 100%; margin-bottom: 4rem; border: 1px solid var(--border); border-left: 2px solid var(--gold); background: transparent;"></div>
            <!-- Text -->
            <div class="sk-block sk-pulse" style="height: 16px; width: 100%;"></div>
            <div class="sk-block sk-pulse" style="height: 16px; width: 95%;"></div>
